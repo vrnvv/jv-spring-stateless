@@ -3,6 +3,7 @@ package mate.academy.dao.impl;
 import java.util.List;
 import java.util.Optional;
 import mate.academy.dao.UserDao;
+import mate.academy.exception.DataProcessingException;
 import mate.academy.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -32,6 +33,19 @@ public class UserDaoImpl extends AbstractDao<User, Long> implements UserDao {
             return session.createQuery(
                     "from User u join fetch u.roles", User.class)
                 .getResultList();
+        }
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(
+                "from User u join fetch u.roles where u.id = :id", User.class)
+                .setParameter("id", id)
+                .uniqueResultOptional();
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't get user by id= " + id
+                + " from database", e);
         }
     }
 }
