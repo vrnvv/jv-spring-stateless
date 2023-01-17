@@ -24,6 +24,9 @@ public class UserDaoImpl extends AbstractDao<User, Long> implements UserDao {
                     "from User u join fetch u.roles where u.email = :email", User.class)
                     .setParameter("email", email)
                     .uniqueResultOptional();
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't get user by email= " + email
+                + " from database", e);
         }
     }
 
@@ -33,6 +36,8 @@ public class UserDaoImpl extends AbstractDao<User, Long> implements UserDao {
             return session.createQuery(
                     "from User u join fetch u.roles", User.class)
                 .getResultList();
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't get users from database", e);
         }
     }
 
